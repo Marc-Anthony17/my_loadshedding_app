@@ -1,0 +1,81 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th {
+  background-color: #f2f2f2;
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+
+h2 {
+  font-size: 24px;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+select#provinces_select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  width: 200px; /* Adjust width as needed */
+  margin-bottom: 10px;
+  /* You can add more styles based on your design */
+}
+
+
+select#provinces_select option {
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  /* Additional styles for options if needed */
+}
+
+
+select#provinces_select:focus {
+  border-color: #007bff; /* Change border color when focused */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box-shadow when focused */
+  /* Additional styles when focused if needed */
+}
+/* Styling for custom select */
+.custom-select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  width: 200px; /* Adjust width as needed */
+  margin-bottom: 10px;
+  /* You can add more styles based on your design */
+}
+
+/* Style for options */
+.custom-select option {
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+  /* Additional styles for options if needed */
+}
+
+/* Style when select element is focused */
+.custom-select:focus {
+  border-color: #007bff; /* Change border color when focused */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box-shadow when focused */
+  /* Additional styles when focused if needed */
+}

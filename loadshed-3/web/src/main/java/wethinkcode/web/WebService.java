@@ -15,7 +15,7 @@ import wethinkcode.stage.StageService;
 public class WebService
 {
 
-    public static final int DEFAULT_PORT = 80;
+    public static final int DEFAULT_PORT = 8080;
 
     public static final String STAGE_SVC_URL = "http://localhost:" + StageService.DEFAULT_PORT;
 
