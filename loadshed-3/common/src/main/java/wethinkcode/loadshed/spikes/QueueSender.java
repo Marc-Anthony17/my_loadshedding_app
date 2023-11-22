@@ -40,7 +40,7 @@ public class QueueSender implements Runnable
             connection.start();
 
             session = connection.createSession( false, Session.AUTO_ACKNOWLEDGE );
-            sendAllMessages( cmdLineMsgs.length == 0
+            sendAllMessages( cmdLineMsgs == null
                 ? new String[]{ "{ \"stage\":17 }" }
                 : cmdLineMsgs );
 
@@ -52,9 +52,19 @@ public class QueueSender implements Runnable
         System.out.println( "Bye..." );
     }
 
-    private void sendAllMessages( String[] messages ) throws JMSException {
-        throw new UnsupportedOperationException( "TODO" );
+    private void sendAllMessages(String[] messages) throws JMSException {
+        javax.jms.Queue queue = session.createQueue(MQ_QUEUE_NAME);
+        javax.jms.MessageProducer producer = session.createProducer(queue);
+
+        for (String message : messages) {
+            javax.jms.TextMessage textMessage = session.createTextMessage(message);
+            producer.send(textMessage);
+            System.out.println("Sent message: " + message);
+        }
+
+        producer.close();
     }
+
 
     private void closeResources(){
         try{

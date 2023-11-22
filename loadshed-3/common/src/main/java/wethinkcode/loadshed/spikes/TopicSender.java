@@ -54,7 +54,16 @@ public class TopicSender implements Runnable
     }
 
     private void sendMessages( String[] messages ) throws JMSException {
-        throw new UnsupportedOperationException( "TODO" );
+        javax.jms.Topic topic = session.createTopic(MQ_TOPIC_NAME);
+        javax.jms.MessageProducer producer = session.createProducer(topic);
+
+        for (String message : messages) {
+            javax.jms.TextMessage textMessage = session.createTextMessage(message);
+            producer.send(textMessage);
+            System.out.println("Sent message: " + message);
+        }
+
+        producer.close();
     }
 
     private void closeResources(){

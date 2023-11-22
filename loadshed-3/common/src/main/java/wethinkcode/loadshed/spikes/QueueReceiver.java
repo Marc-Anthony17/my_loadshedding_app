@@ -1,12 +1,6 @@
 package wethinkcode.loadshed.spikes;
 
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
+import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import wethinkcode.loadshed.common.mq.MQ;
@@ -69,8 +63,16 @@ public class QueueReceiver implements Runnable
             final MessageConsumer receiver = session.createConsumer( queueId );
             receiver.setMessageListener( new MessageListener() { //this anonymous inner-class could be replaced with a lambda
                 @Override
-                public void onMessage( Message m ){
-                    throw new UnsupportedOperationException( "TODO" );
+                public void onMessage( Message m ) {
+                    try {
+                        String body = ((TextMessage) m).getText();
+                        if ("SHUTDOWN".equals(body)) {
+                            connection.close();
+                        }
+                        System.out.println("Received message: " + body);
+                    }catch (JMSException e) {
+                    throw new RuntimeException(e);
+                }
                 }
             }
             );
