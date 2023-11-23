@@ -14,7 +14,7 @@
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3/common" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/schedule/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="common_lib" />
@@ -24,12 +24,37 @@
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\web/common" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="common_lib" />
+      <option name="name" value="Project library" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/places/common" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="common_lib" />
+      <option name="name" value="Project library" />
+      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\places/common" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="common_lib" />
+      <option name="name" value="Project library" />
+      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3/common" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="common_lib" />
+      <option name="name" value="Project library" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/stage/common" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="common_lib" />
+      <option name="name" value="Project library" />
+      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\web/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />
@@ -39,12 +64,17 @@
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\common/common" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/web/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\places/common" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/common/common" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="common_lib" />
+      <option name="name" value="Project library" />
+      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\common/common" />
     </remote-repository>
   </component>
 </project>

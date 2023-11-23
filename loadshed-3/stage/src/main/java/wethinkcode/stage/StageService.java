@@ -5,7 +5,11 @@ import com.google.common.annotations.VisibleForTesting;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import wethinkcode.loadshed.common.mq.MQ;
 import wethinkcode.loadshed.common.transfer.StageDO;
+
+import javax.jms.*;
 
 /**
  * I provide a REST API that reports the current loadshedding "stage". I provide two endpoints:
@@ -19,11 +23,23 @@ import wethinkcode.loadshed.common.transfer.StageDO;
  */
 public class StageService
 {
+    public static final String MQ_URL = "tcp://localhost:61616";
+
+    public static final String MQ_USER = "admin";
+
+    public static final String MQ_PASSWD = "admin";
+
     public static final int DEFAULT_STAGE = 0; // no loadshedding. Ha!
 
     public static final int DEFAULT_PORT = 7001;
 
     public static final String MQ_TOPIC_NAME = "stage";
+
+    private String[] cmdLineMsgs;
+
+    private Connection connection;
+
+    private Session session;
 
     public static void main( String[] args ){
         final StageService svc = new StageService().initialise();
@@ -81,6 +97,7 @@ public class StageService
     private Context setNewStage( Context ctx ){
         final StageDO stageData = ctx.bodyAsClass( StageDO.class );
         final int newStage = stageData.getStage();
+
         if( newStage >= 0 ){
             loadSheddingStage = newStage;
             broadcastStageChangeEvent( ctx );
@@ -92,7 +109,45 @@ public class StageService
     }
 
     private void broadcastStageChangeEvent( Context ctx ){
-        throw new UnsupportedOperationException( "TODO" );
+        final StageDO stageData = ctx.bodyAsClass( StageDO.class );
+        final int newStage = stageData.getStage();
+        setUpMessageSender(newStage);
+
+    }
+
+    private void setUpMessageSender(int stage){
+        try{
+            final ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory( MQ_URL );
+            connection = factory.createConnection( MQ_USER, MQ_PASSWD );
+            connection.start();
+
+            session = connection.createSession( false, Session.AUTO_ACKNOWLEDGE );
+            sendMessages( "{ \"stage\": "+stage+ " }" );
+
+        }catch( JMSException erk ){
+            throw new RuntimeException( erk );
+        }finally{
+            closeResources();
+            System.out.println( "Bye..." );
+        }
+    }
+    private void sendMessages( String message ) throws JMSException {
+        javax.jms.Topic topic = session.createTopic(MQ_TOPIC_NAME);
+        javax.jms.MessageProducer producer = session.createProducer(topic);
+        javax.jms.TextMessage textMessage = session.createTextMessage(message);
+        producer.send(textMessage);
+        System.out.println("Sent message: " + message);
+        producer.close();
+    }
+    private void closeResources(){
+        try{
+            if( session != null ) session.close();
+            if( connection != null ) connection.close();
+        }catch( JMSException ex ){
+            // wut?
+        }
+        session = null;
+        connection = null;
     }
 
 }
