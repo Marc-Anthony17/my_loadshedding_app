@@ -43,7 +43,7 @@
                   stage = data.stage;
                 });
 
-      fetch(`http://localhost:7002/${province}/${city}/${stage}`, options)
+      fetch(`http://localhost:7002/${province}/${city}`, options)
           .then(response => response.json())
           .then(data => {
             data = {
@@ -70,9 +70,10 @@
     return new Handlebars.SafeString(result);
   });
 
+
 Handlebars.registerHelper('displayStage', function() {
-      var result = `<p> ${stage} </p> `;
-      return new Handlebars.SafeString(result);
+    var result = `<p> ${stage} </p> `;
+    return new Handlebars.SafeString(result);
     });
 
 function getFinalDates(list) {

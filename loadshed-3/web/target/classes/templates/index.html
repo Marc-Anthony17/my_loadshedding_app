@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Loadshedding app</title>
+    <link
+            href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAOjv4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEBEAAAAAEBAAABAQAAAQEREREBAAABEREREREAAAARAREBEAAAAAEREREAAAAAABAAEAAAAAAAEAAQAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA//8AAPyfAADr6wAA6AsAAOADAADyJwAA+A8AAP3fAAD93wAA++8AAP//AAD//wAA"
+            rel="icon" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<h1>Loadshedding App</h1>
+<br/>
+
+<div id = "province"></div>
+<div id = "city">Please select a province.</div>
+<div id = "schedule">Please select a schedule.</div>
+
+<script id="province-template" type="text/handlebars-template">
+    <h2>Select A Province</h2>
+    <br/>
+    <select name="provinces_select" id="provinces_select" onclick="loadCities()">
+        {{#each provinces}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+        <br>
+    </select>
+</script>
+
+<script id="city-template" type="text/handlebars-template">
+    <h2>Select A City</h2>
+    <br/>
+    <select name="city_select" id="city_select" class="custom-select" onclick="loadSchedule()">
+
+        {{#each cities}}
+        <option value="{{this.name}}">{{this.name}}</option>
+        <br>
+        {{/each}}
+    </select>
+
+
+    <br/>
+</script>
+
+<script id="schedule-template" type="text/handlebars-template">
+    <h2>Your schedule</h2>
+    <table>
+        <tr>
+            <th>Stage</th>
+            <th>Date</th>
+            <th>Start time</th>
+            <th>End time</th>
+            <th>Start time</th>
+            <th>End time</th>
+            <th>Start time</th>
+            <th>End time</th>
+        </tr>
+        {{#each days}}
+        <tr>
+            <td>
+                {{displayStage }}
+            </td>
+            <td>
+                {{displayList startDate}}
+            </td>
+            {{#each this.slots}}
+            {{#each this.start}}
+            {{#if_equal this "0"}}
+            {{else}}
+            <td>{{this}}:00</td>
+            {{/if_equal}}
+            {{/each}}
+            {{#each this.end}}
+            {{#if_equal this "0"}}
+            {{else}}
+            <td>{{this}}:00</td>
+            {{/if_equal}}
+            {{/each}}
+            {{/each}}
+        </tr>
+        <br>
+        {{/each}}
+    </table>
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+<!--<script type="text/javascript" src="js/app.js"></script>-->
+<script src="js/app.js">
+</script>
+</body>
+
+</html>

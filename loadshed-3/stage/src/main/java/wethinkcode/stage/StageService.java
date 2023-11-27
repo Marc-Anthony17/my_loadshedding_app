@@ -5,6 +5,7 @@ import com.google.common.annotations.VisibleForTesting;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import wethinkcode.loadshed.common.mq.MQ;
 import wethinkcode.loadshed.common.transfer.StageDO;
@@ -53,7 +54,7 @@ public class StageService
     private int servicePort;
 
     @VisibleForTesting
-    StageService initialise(){
+    public StageService initialise(){
         return initialise( DEFAULT_STAGE );
     }
 
@@ -85,7 +86,11 @@ public class StageService
     }
 
     private Javalin initHttpServer(){
-        return Javalin.create()
+        return Javalin.create(config -> { config.plugins.enableCors(cors -> {
+                    // allow any host to access your resources
+                    cors.add(CorsPluginConfig::anyHost);
+                });
+        })
             .get( "/stage", this::getCurrentStage )
             .post( "/stage", this::setNewStage );
     }

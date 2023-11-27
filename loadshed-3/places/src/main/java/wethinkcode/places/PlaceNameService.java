@@ -3,12 +3,15 @@ package wethinkcode.places;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -109,7 +112,7 @@ public class PlaceNameService implements Runnable {
      * starting up all the big machinery (i.e. without calling initialise()).
      */
     @VisibleForTesting
-    PlaceNameService initialise(){
+    public PlaceNameService initialise(){
         places = initPlacesDb();
         server = initHttpServer();
         return this;
@@ -121,6 +124,7 @@ public class PlaceNameService implements Runnable {
     @VisibleForTesting
     PlaceNameService initialise( Places aPlaceDb ){
         places = aPlaceDb;
+        System.out.println(places.provinces());
         server = initHttpServer();
         return this;
     }
@@ -164,8 +168,12 @@ public class PlaceNameService implements Runnable {
     }
 
     private Javalin initHttpServer(){
-        return Javalin.create()
-            .get( "/provinces", ctx -> ctx.json( places.provinces() ))
+        return Javalin.create((config -> { config.plugins.enableCors(cors -> {
+                    // allow any host to access your resources
+                    cors.add(CorsPluginConfig::anyHost);
+                });
+                }))
+            .get( "/provinces", ctx -> ctx.json( places.provinces().stream().filter(makeProvince()::contains).collect(Collectors.toList())))
             .get( "/towns/{province}", this::getTowns );
     }
 
@@ -181,7 +189,19 @@ public class PlaceNameService implements Runnable {
             ? configFile
             : new File( defaultConfig().getProperty( CFG_CONFIG_FILE ));
     }
-
+    private ArrayList<String> makeProvince(){
+        ArrayList<String> provinces = new ArrayList<>();
+        provinces.add("Eastern Cape");
+        provinces.add("Free State");
+        provinces.add("Gauteng");
+        provinces.add("KwaZulu-Natal");
+        provinces.add("Limpopo");
+        provinces.add("Mpumalanga");
+        provinces.add("North West");
+        provinces.add("Northern Cape");
+        provinces.add("Western Cape");
+        return provinces;
+    }
     @VisibleForTesting
     File dataFile(){
         return dataFile != null
@@ -216,7 +236,10 @@ public class PlaceNameService implements Runnable {
         final Properties p = new Properties();
         p.setProperty( CFG_CONFIG_FILE, System.getProperty( "user.dir" ) + "/places.properties" );
         p.setProperty( CFG_DATA_DIR, System.getProperty( "user.dir" ));
-        p.setProperty( CFG_DATA_FILE, System.getProperty( "user.dir" ) + "/places.csv" );
+
+        p.setProperty( CFG_DATA_FILE, (System.getProperty( "user.dir" ).contains("places") ?
+                System.getProperty( "user.dir" ) + "/places.csv" :
+                System.getProperty( "user.dir" ) + "/places/places.csv"  ));
         p.setProperty(CFG_SERVICE_PORT, Integer.toString(DEFAULT_PORT ));
         return p;
     }

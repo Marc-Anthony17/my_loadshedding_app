@@ -34,12 +34,12 @@
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/places/common" />
+      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\places/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\places/common" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/places/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="common_lib" />
@@ -69,12 +69,12 @@
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/common/common" />
+      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\common/common" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="common_lib" />
       <option name="name" value="Project library" />
-      <option name="url" value="file:///C:\Users\NotMarc\my_loadshedding_app\loadshed-3\common/common" />
+      <option name="url" value="file:////home/geruth/my_loadshedding_app/loadshed-3/common/common" />
     </remote-repository>
   </component>
 </project>

@@ -2,6 +2,7 @@ package wethinkcode.web;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
 import kong.unirest.HttpResponse;
 import kong.unirest.HttpStatus;
 import kong.unirest.JsonNode;
@@ -33,11 +34,11 @@ public class WebService
 
     public static final String SCHEDULE_SVC_URL = "http://localhost:" + ScheduleService.DEFAULT_PORT;
 
-    private static final String PAGES_DIR = "/html";
+    private static final String PAGES_DIR = "/templates";
 
     public static void main( String[] args ){
         final WebService svc = new WebService().initialise();
-        svc.start();
+//        svc.start();
     }
 
     private Javalin server;
@@ -48,7 +49,8 @@ public class WebService
 
     @VisibleForTesting
     WebService initialise(){
-        // FIXME: Initialise HTTP client, MQ machinery and server from here
+        server = configureHttpServer();
+        launchAllServers();
         return this;
     }
 
@@ -67,15 +69,45 @@ public class WebService
     }
 
     public void run(){
-        server.start( servicePort );
+        launchAllServers(servicePort);
     }
 
-    private void configureHttpClient(){
-        throw new UnsupportedOperationException( "TODO" );
-    }
+//    private void configureHttpClient(){
+//        throw new UnsupportedOperationException( "TODO" );
+//    }
 
+    private void launchAllServers(){
+        configurePlaceNameService();
+        configureScheduleService();
+        server.start( DEFAULT_PORT );
+        listener();
+        configureStageService();
+    }
+    private void launchAllServers(int selectedPort){
+        configurePlaceNameService();
+        configureScheduleService();
+        server.start( selectedPort );
+        listener();
+        configureStageService();
+    }
     private Javalin configureHttpServer(){
-        throw new UnsupportedOperationException( "TODO" );
+        return Javalin.create(config -> {
+            config.staticFiles.add(PAGES_DIR, Location.CLASSPATH);
+            ;
+        });
+    }
+    private void configureStageService(){
+        StageService stageServer = new StageService();
+        stageServer.initialise();
+        stageServer.start();
+    }
+    private void configurePlaceNameService(){
+        PlaceNameService placeServer = new PlaceNameService().initialise();
+        placeServer.start();
+    }
+    private void configureScheduleService(){
+        ScheduleService scheduleService = new ScheduleService().initialise();
+        scheduleService.start();
     }
 
 
@@ -97,7 +129,7 @@ public class WebService
      */
 
     public void setNewStage(int stage){
-        HttpResponse<JsonNode> post = Unirest.post( "http://localhost:"+StageService.DEFAULT_PORT+"/stage" )
+        HttpResponse<JsonNode> post = Unirest.post( STAGE_SVC_URL+"/stage" )
                 .header( "Content-Type", "application/json" )
                 .body( new StageDO( stage ))
                 .asJson();
@@ -120,7 +152,8 @@ public class WebService
                  public void onMessage( Message m ){
                      try {
                          String body = ((TextMessage) m).getText();
-                         int theStage = Integer.parseInt(body);
+
+                         int theStage = Integer.parseInt(body.split(" ")[2]);
                          if ("SHUTDOWN".equals(body)) {
                              connection.close();
                          }
@@ -128,7 +161,8 @@ public class WebService
                           setNewStage(theStage);
                          }
                          System.out.println("Received message: " + body);
-                     }catch (JMSException e) {
+                     }catch (Exception e) {
+                         System.out.println("invalid option");
                          throw new RuntimeException(e);
                      }
                  }
