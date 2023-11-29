@@ -40,6 +40,7 @@ public class WebService
         final WebService svc = new WebService().initialise();
 //        svc.start();
     }
+    private int stage;
 
     private Javalin server;
 
@@ -111,33 +112,6 @@ public class WebService
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * ################################################################################################################################
-     * @param stage
-     */
-
-    public void setNewStage(int stage){
-        HttpResponse<JsonNode> post = Unirest.post( STAGE_SVC_URL+"/stage" )
-                .header( "Content-Type", "application/json" )
-                .body( new StageDO( stage ))
-                .asJson();
-        if( HttpStatus.OK == post.getStatus() ){
-            System.out.println("Post successful");
-        };
-
-    }
     public void listener(){
         try{
             final ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory( MQ.URL );
@@ -158,7 +132,7 @@ public class WebService
                              connection.close();
                          }
                          if(theStage >= 0 && theStage <9){
-                          setNewStage(theStage);
+                          stage = theStage;
                          }
                          System.out.println("Received message: " + body);
                      }catch (Exception e) {
