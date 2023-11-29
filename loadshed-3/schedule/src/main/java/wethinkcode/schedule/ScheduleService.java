@@ -207,7 +207,7 @@ public class ScheduleService
             connection.start();
 
         }catch( JMSException erk ){
-            throw new RuntimeException( erk );
+            System.err.println(erk.getMessage());
         }
     }
 }
