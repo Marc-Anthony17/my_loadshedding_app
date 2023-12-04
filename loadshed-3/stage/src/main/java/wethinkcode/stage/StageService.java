@@ -130,7 +130,7 @@ public class StageService
             sendMessages( "{ \"stage\": "+stage+ " }" );
 
         }catch( JMSException erk ){
-            throw new RuntimeException( erk );
+            System.out.println("Broker down");
         }finally{
             closeResources();
             System.out.println( "Bye..." );

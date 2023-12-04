@@ -8,6 +8,9 @@ import kong.unirest.HttpStatus;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import wethinkcode.AlertService;
 import wethinkcode.loadshed.common.mq.MQ;
 import wethinkcode.loadshed.common.transfer.StageDO;
 import wethinkcode.places.PlaceNameService;
@@ -22,8 +25,13 @@ import javax.jms.*;
  * Remember that we're not terribly interested in the web front-end part of this server, more in the way it communicates
  * and interacts with the back-end services.
  */
-public class WebService
+public class WebService implements Runnable
 {
+    public static final String MQ_URL = "tcp://localhost:61616";
+    private Session session;
+    public static final String MQ_USER = "admin";
+
+    public static final String MQ_PASSWD = "admin";
 
     public static final int DEFAULT_PORT = 8080;
 
@@ -34,10 +42,14 @@ public class WebService
 
     public static final String SCHEDULE_SVC_URL = "http://localhost:" + ScheduleService.DEFAULT_PORT;
 
+    private static final Logger SERVER_LOG = Logger.getLogger( "loadshed.stage.server" );
+    private static final Logger DB_LOG = Logger.getLogger( "loadshed.stage.database" );
+    private static final Logger USR_LOG = Logger.getLogger( "loadshed.stage.users" );
     private static final String PAGES_DIR = "/templates";
 
     public static void main( String[] args ){
         final WebService svc = new WebService().initialise();
+        new Thread(svc).start();
 //        svc.start();
     }
     private int stage;
@@ -70,12 +82,12 @@ public class WebService
     }
 
     public void run(){
-        launchAllServers(servicePort);
+        try {
+            checker();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
-
-//    private void configureHttpClient(){
-//        throw new UnsupportedOperationException( "TODO" );
-//    }
 
     private void launchAllServers(){
         configurePlaceNameService();
@@ -83,6 +95,7 @@ public class WebService
         server.start( DEFAULT_PORT );
         listener();
         configureStageService();
+        new AlertService().run();
     }
     private void launchAllServers(int selectedPort){
         configurePlaceNameService();
@@ -145,7 +158,80 @@ public class WebService
             connection.start();
 
         }catch( JMSException erk ){
-            throw new RuntimeException( erk );
+            USR_LOG.log(Level.FATAL,"NOT RUNNING THE LISTENER ", erk);
+
+            System.out.println("brocker down");        }
+    }
+
+    public boolean isPlaceNameServiceLive(){
+        try {
+            Unirest.get( STAGE_SVC_URL + "/stage" ).asJson();
+            return true;
         }
+        catch (Exception e){
+            SERVER_LOG.log(Level.FATAL,"PlaceNameService is down: ", e);
+            return false;
+        }
+    }
+
+    public boolean isScheduleServiceLive(){
+        try {
+            Unirest.get( SCHEDULE_SVC_URL + "/Gauteng/nigel" ).asJson();
+            return true;
+        }
+        catch (Exception e){
+            SERVER_LOG.log(Level.FATAL,"ScheduleService is down: ", e);
+
+            return false;
+        }
+    }
+
+    public void checker() throws InterruptedException {
+        while (true){
+            if (!isScheduleServiceLive()){
+                setUpMessageSender("schedule_service_down");
+                break;
+            } else if (!isPlaceNameServiceLive()) {
+                setUpMessageSender("place_name_service_down");
+                break;
+            }
+//            System.out.println("Just checked");
+            Thread.sleep(5000);
+        }
+    }
+
+    private void setUpMessageSender(String alert){
+        try{
+            final ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory( MQ_URL );
+            connection = factory.createConnection( MQ_USER, MQ_PASSWD );
+            connection.start();
+
+            session = connection.createSession( false, Session.AUTO_ACKNOWLEDGE );
+            sendMessage( alert );
+
+        }catch( JMSException erk ){
+            throw new RuntimeException( erk );
+        }finally{
+            closeResources();
+        }
+    }
+    private void sendMessage(String message) throws JMSException {
+        javax.jms.Queue queue = session.createQueue("alert");
+        javax.jms.MessageProducer producer = session.createProducer(queue);
+        javax.jms.TextMessage textMessage = session.createTextMessage(message);
+        producer.send(textMessage);
+        System.out.println("Alert message: " + message);
+        producer.close();
+    }
+
+    private void closeResources(){
+        try{
+            if( session != null ) session.close();
+            if( connection != null ) connection.close();
+        }catch( JMSException ex ){
+            // wut?
+        }
+        session = null;
+        connection = null;
     }
 }

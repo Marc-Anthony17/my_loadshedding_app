@@ -70,6 +70,12 @@
             <artifactId>activemq-all</artifactId>
             <version>5.15.8</version>
         </dependency>
+        <dependency>
+            <groupId>wethinkcode</groupId>
+            <artifactId>alert</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
